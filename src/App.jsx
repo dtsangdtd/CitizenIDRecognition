@@ -30,36 +30,59 @@ function App() {
   });
 
 
-  const handlePaste = useCallback((e) => {
-    if (e.ctrlKey) {
-      e.preventDefault();
-      e.stopPropagation();
-      navigator.clipboard
-        .readText()
-        .then((text) => {
-          const [cccd, cmnd, fullName, dateOfBirth, gender, address, dateOfIssue] = text.split("|");
-          
-          setValue("cccd", cccd || "");
-          setValue("cmnd", cmnd || "");
-          setValue("fullName", fullName || "");
-          setValue("dateOfBirth", dateOfBirth ? normalizeDate(dateOfBirth) : null);
-          setValue("gender", gender === "Nam" ? "male" : gender === "Nữ" ? "female" : "other");
-          setValue("address", address || "");
-          setValue("dateOfIssue", dateOfIssue ? normalizeDate(dateOfIssue) : null);
-        })
-        .catch((err) => console.error("Failed to read clipboard:", err));
-    }
-  }, [setValue]);
+  const handlePaste = useCallback(
+    (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        navigator.clipboard
+          .readText()
+          .then((text) => {
+            // Only process if text contains '|' character
+            if (text.includes("|")) {
+              const [
+                cccd,
+                cmnd,
+                fullName,
+                dateOfBirth,
+                gender,
+                address,
+                dateOfIssue,
+              ] = text.split("|");
+
+              setValue("cccd", cccd || "");
+              setValue("cmnd", cmnd || "");
+              setValue("fullName", fullName || "");
+              setValue(
+                "dateOfBirth",
+                dateOfBirth ? normalizeDate(dateOfBirth) : null
+              );
+              setValue(
+                "gender",
+                gender === "Nam" ? "male" : gender === "Nữ" ? "female" : "other"
+              );
+              setValue("address", address || "");
+              setValue(
+                "dateOfIssue",
+                dateOfIssue ? normalizeDate(dateOfIssue) : null
+              );
+            }
+          })
+          .catch((err) => console.error("Failed to read clipboard:", err));
+      }
+    },
+    [setValue]
+  );
 
   useEffect(() => {
     const handleGlobalPaste = (e) => {
-      if (e.ctrlKey && e.code === 'KeyV') {
+      if (e.ctrlKey && e.code === "KeyV") {
         handlePaste(e);
       }
     };
 
-    window.addEventListener('keydown', handleGlobalPaste);
-    return () => window.removeEventListener('keydown', handleGlobalPaste);
+    window.addEventListener("keydown", handleGlobalPaste);
+    return () => window.removeEventListener("keydown", handleGlobalPaste);
   }, [handlePaste]);
 
   const onSubmit = (data) => {
@@ -75,13 +98,21 @@ function App() {
     return dayjs(`${year}-${month}-${day}`);
   };
 
-
-
   return (
-    <Container maxWidth >
+    <Container maxWidth>
       <Box sx={{ px: 40 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <img src={logo} alt=""  style={{ width: 100, height: 100, padding: 10 }} />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src={logo}
+            alt=""
+            style={{ width: 100, height: 100, padding: 10 }}
+          />
         </Box>
         <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
           ĐỌC QR CĂN CƯỚC
@@ -97,7 +128,6 @@ function App() {
                 {...register("cccd")}
                 onKeyDown={handlePaste}
                 InputLabelProps={{ shrink: true }} // Add this line
-
               />
             </Grid>
             <Grid item xs={12}>
@@ -105,9 +135,7 @@ function App() {
                 fullWidth
                 label="Chứng minh nhân dân 9 số"
                 {...register("cmnd")}
-                onKeyDown={handlePaste}
                 InputLabelProps={{ shrink: true }} // Add this line
-
               />
             </Grid>
 
@@ -116,9 +144,7 @@ function App() {
                 fullWidth
                 label="Họ và tên"
                 {...register("fullName")}
-                onKeyDown={handlePaste}
                 InputLabelProps={{ shrink: true }} // Add this line
-
               />
             </Grid>
 
@@ -156,9 +182,7 @@ function App() {
                 rows={3}
                 label="Address"
                 {...register("address")}
-                onKeyDown={handlePaste}
                 InputLabelProps={{ shrink: true }} // Add this line
-
               />
             </Grid>
 
@@ -168,7 +192,7 @@ function App() {
                   label="Ngày cấp"
                   onChange={(date) => setValue("dateOfIssue", date)}
                   value={watch("dateOfIssue")}
-                   format="DD/MM/YYYY"
+                  format="DD/MM/YYYY"
                   slotProps={{ textField: { fullWidth: true } }}
                 />
               </LocalizationProvider>
