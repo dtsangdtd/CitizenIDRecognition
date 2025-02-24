@@ -45,7 +45,7 @@ function App() {
 
       if (scannedText.includes("|")) {
         const parts = scannedText.split("|");
-        if (parts.length === 7) {
+        if (parts.length >= 7) {
           const [
             cccd,
             cmnd,
